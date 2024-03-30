@@ -68,8 +68,23 @@ spec:
 - Composition is the configuration that provides a mapping between the new CRD schema and the existing MRs
 - One the new `XR` resource is available, we can start provisioning the infrastructure recipes using a `Resource Claim object`
 - The `Claim` API is something that gets created when we add a new XR API, provided we have asked for it in the `XRD` configuration
-- The Claim and XR APIs are almost the same with minor differences.
+- The Claim and XR APIs are almost the same with minor differences
 
 ![img.png](static/img9.png)
 
+*A composite resource*
+
+- The composing layer is for platform teams to build such abstraction
+
+![img.png](static/img10.png)
+
+*Product and platform team interaction*
+
+---
+
+## Crossplane core
+
+![img.png](static/img11.png)
+
+*All the pieces of Crossplane*
 
