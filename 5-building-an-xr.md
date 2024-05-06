@@ -1,5 +1,5 @@
 
-## Building an XR
+# Building an XR
 
 - Infrastructure API requirement
   - `Compliance policy` provisioning should be done in `us-central` region
