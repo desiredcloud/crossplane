@@ -952,3 +952,169 @@ spec:
 EOF
 ```
 
+
+```shell
+ k get application -n alpha
+NAME             SYNCED   READY   CONNECTION-SECRET   AGE
+my-application   True     False                       2d4h
+ 
+ k get xapplication
+NAME                   SYNCED   READY   COMPOSITION       AGE
+my-application-zctd2   True     False   gcp-application   2d4h
+ 
+ k get cloudsqlinstance
+NAME                         READY   SYNCED   STATE      VERSION     AGE
+my-application-zctd2-xhvkq   True    True     RUNNABLE   MYSQL_5_7   2d4h
+ 
+ k get xgcpcluster
+NAME                         SYNCED   READY   COMPOSITION      AGE
+my-application-zctd2-ch9xv   True     False   gcp-kubernetes   2d4h
+ 
+ k get cluster
+NAME                         READY   SYNCED   STATE     ENDPOINT       LOCATION      AGE
+my-application-zctd2-lnm2q   False   False    RUNNING   34.172.76.21   us-central1   2d4h
+ 
+ k get bucket
+NAME                         READY   SYNCED   STORAGE_CLASS   LOCATION   AGE
+my-application-zctd2-x8bzd   True    True     STANDARD        US         2d4h
+
+```
+
+---
+
+## Naming the versions
+
+```yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xbuckets.version-test.imarunrk.com
+spec:
+  group: version-test.imarunrk.com
+  names:
+    kind: XBuckets
+    plural: xbuckets
+  versions:
+  - name: v1.0
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  region:
+                    type: string
+                required:
+                - region
+            required:
+            - parameters
+EOF
+```
+
+```shell
+The CompositeResourceDefinition "xbuckets.version-test.imarunrk.com" is invalid: 
+* <generated_CRD_"xbuckets.version-test.imarunrk.com">.spec.versions[0].name: Invalid value: "v1.0": a DNS-1035 label must consist of lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character (e.g. 'my-name',  or 'abc-123', regex used for validation is '[a-z]([-a-z0-9]*[a-z0-9])?')
+* <generated_CRD_"xbuckets.version-test.imarunrk.com">.spec.version: Invalid value: "v1.0": a DNS-1035 label must consist of lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character (e.g. 'my-name',  or 'abc-123', regex used for validation is '[a-z]([-a-z0-9]*[a-z0-9])?')
+```
+
+---
+
+When we troubleshoot an issue with Crossplane, logs from the Crossplane pod can help. Enable debugging mode by adding an argument, --debug, to the Crossplane pod. Similarly, we can even look at the provider’s container logs.
+
+---
+
+## OpenAPIV3Schema structure
+
+```yaml
+openAPIV3Schema:
+  type: object
+  properties:
+    # spec – the API input configuration
+    spec:
+      type: object
+      properties:
+        ............. configuration continues 
+    # status – the API output configuration 
+    status:
+      type: object
+      properties:
+        ............. configuration continues
+```
+
+```yaml
+# The root attribute openAPIV3Schema of type object
+openAPIV3Schema:
+  type: object
+  # spec/status - attributes (properties) of openAPIV3Schema
+  properties:
+    # spec – the XR input
+    spec:
+      type: object
+      properties:
+        # parameters - again an object with attributes list
+        parameters:
+          type: object
+          properties:
+            # region – string primitive  - node ends
+            region:
+            type: string
+    # status – API output configuration
+    # The exact structure of configuration as before
+    # Attributes, their types, and properties
+    status:
+      type: object
+            properties:
+              zone:
+                description: DB zone.
+                type: string   
+```
+
+```yaml
+spec:
+  type: object
+  description: API input specification 
+  properties:
+    parameters:
+      type: object
+      description: Parameter's to configure the resource
+      properties:
+        size:
+          type: integer
+          description: Disk size of the database
+          default: 20
+          minimum: 10
+          maximum: 100
+        vm:
+          type: string
+          description: Size of the virtual machine.
+        enum:
+        - small
+        - medium
+        - large
+      required:
+      - size
+  required:
+  - parameters
+```
+
+- [More on OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.0.md)
+
+## Printer Columns
+
+```yaml
+additionalPrinterColumns:
+- name: Zone
+  type: string
+  description: 
+  jsonPath: .spec.zone
+- name: Age
+  type: date
+  jsonPath: .metadata.creationTimestamp
+```

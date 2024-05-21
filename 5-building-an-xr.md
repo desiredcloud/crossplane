@@ -442,8 +442,10 @@ status:
 
 ![img.png](static/img19.png)
 
-- The debugging order will be claim, then XR, and then each composing resource. We should start with a claimed object. If we cannot locate the issue, we go deep into the XR and then the composing resources.
-- spec.resourceRef from the claim description can help us to identify the XR name. Again, the same attribute can be used to find the composing resources from the XR.
+- The debugging order will be claim, then XR, and then each composing resource. We should start with a claimed object. 
+- If we cannot locate the issue, we go deep into the XR and then the composing resources.
+- `spec.resourceRef` from the claim description can help us to identify the XR name. 
+- Again, the same attribute can be used to find the composing resources from the XR.
 
 ## Cleanup
 
